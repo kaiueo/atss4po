@@ -2,7 +2,7 @@
 """Test forms."""
 
 from atss4po.public.forms import LoginForm
-from atss4po.user.forms import RegisterForm
+from atss4po.auth.forms import RegisterForm
 
 
 class TestRegisterForm:

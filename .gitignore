@@ -47,3 +47,5 @@ env/
 
 # Project
 .idea
+migrations
+dev.db

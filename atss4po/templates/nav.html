@@ -1,49 +1,52 @@
+<div id="banner">
+            <div id="bannerContainer">
 
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-  <div class="container">
+                <div id="navigation">
+                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                    <ul>
+                        <div class="navIEPadder">
+                            <li>
+                                <a href="/index/">主页</a>
+                            </li>
+                            <li>
+                                <a href="/blog/">技术博客</a>
+                            </li>
+                            <li>
+                                <a href="/downloads/list">下载</a>
+                            </li>
+                            <li>
+                                <a href="/api/v1.0/pipeline/?lang=zh&annotators=segment,pos,ner&text=我爱吃北京烤鸭" target="_blank">API接口</a>
+                            </li>
+                            <li>
+                                <a href="http://deepnlp.readthedocs.io/" target="_blank">文档</a>
+                            </li>
+                            <li>
+                                <a href="/about/">关于</a>
+                            </li>
+                        </div>
 
-  <!-- Brand and toggle get grouped for better mobile display -->
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="{{ url_for('public.home') }}">
+                        <div class="navAccount">
+                            {% if current_user.is_authenticated %}
+                                <li>
+                                <a href="">{{ current_user.username }}</a>
+                                </li>
+                                <li>
+                                <a href="{{ url_for('auth.logout') }}">登出</a>
+                            </li>
+                            {% else %}
 
-      ATSS4PO
+                            <li>
+                                <a href="{{ url_for('auth.register') }}">注册</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('auth.login') }}">登陆</a>
+                            </li>
+                            {% endif %}
 
-    </a>
-  </div>
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <div class="collapse navbar-collapse navbar-ex1-collapse">
-    <ul class="nav navbar-nav">
-      <li><a href="{{ url_for('public.home') }}">Home</a></li>
-      <li><a href="{{ url_for('public.about') }}">About</a></li>
-    </ul>
-    {% if current_user and current_user.is_authenticated %}
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            <p class="navbar-text"><a class="navbar-link" href="{{ url_for('user.members') }}">Logged in as {{ current_user.username }}</a></p>
-        </li>
-        <li><a class="navbar-link" href="{{ url_for('public.logout') }}"><i class="fa fa-sign-out"></i></a></li>
+                        </div>
 
-    </ul>
-    {% elif form %}
-    <ul class="nav navbar-nav navbar-right">
-      <li><a href="{{ url_for('public.register') }}">Create account</a></li>
-    </ul>
-    <form id="loginForm" method="POST" class="navbar-form form-inline navbar-right" action="/" role="login">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-      <div class="form-group">
-        {{ form.username(placeholder="Username", class_="form-control") }}
-        {{ form.password(placeholder="Password", class_="form-control") }}
-      </div>
-      <button type="submit" class="btn btn-default">Log in</button>
-    </form>
-    {% endif %}
-  </div><!-- /.navbar-collapse -->
-  </div><!-- /.container -->
-</nav>
+                    </ul>
 
+                </div>
+            </div>
+</div>

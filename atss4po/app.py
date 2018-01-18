@@ -2,9 +2,9 @@
 """The app module, containing the app factory function."""
 from flask import Flask, render_template
 
-from atss4po import commands, public, user
+from atss4po import commands, public, user, auth
 from atss4po.assets import assets
-from atss4po.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate
+from atss4po.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate, bootstrap
 from atss4po.settings import ProdConfig
 
 
@@ -33,6 +33,7 @@ def register_extensions(app):
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
+    bootstrap.init_app(app)
     return None
 
 
@@ -40,6 +41,7 @@ def register_blueprints(app):
     """Register Flask blueprints."""
     app.register_blueprint(public.views.blueprint)
     app.register_blueprint(user.views.blueprint)
+    app.register_blueprint(auth.views.blueprint)
     return None
 
 

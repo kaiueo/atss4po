@@ -1,0 +1,581 @@
+*{margin:0;padding:0;}
+html{font-size:medium;font-family:Arial,sans-serif;}
+html,body{
+	min-height:100%;  
+    position:absolute;   
+	height: 100%;
+    width: 100%;
+	background-color:#White;
+}
+#main{
+	margin: 0 auto;
+	height: 100%;
+    width: 100%;
+	margin: 0 auto;
+	background-color:White;
+}
+.bannerIEPadder, .sidebarIEPadder, .contentIEPadder{
+	width: 1400px;
+	position: relative;
+	padding:10px;	
+}
+.navIEPadder, .footerIEPadder{
+	padding:5px;
+	float: left;
+}
+.navAccount{
+	padding:5px;
+	float: right;
+}
+.button{
+background-color: #51be95;
+border-radius: 5px;
+-webkit-border-radius: 5px;
+-moz-border-border-radius: 5px;
+border: none;
+padding: 10px 25px 10px 25px;
+color: #FFF;
+text-shadow: 1px 1px 1px #949494;
+}
+#banner{
+	height:60px;
+	background-color:rgb(104, 195, 159);
+	color:#152e55;
+	font-size:24px;
+	font-family:Helvetica;
+    position: relative;
+    z-index: 0;
+}
+#bannerContainer{
+	MARGIN-RIGHT: auto; /*Center*/
+	MARGIN-LEFT: auto;
+	max-width: 1200px;
+	padding:10px;	
+}
+div#logo{
+/*display: inline-block;*/
+width: 200px;
+height: 50px;
+margin: 0px 0;
+float:left;
+}
+div#searchbox{
+/*display: inline-block;*/
+width: 300px;
+height: 50px;
+margin: 0px 0;
+float:right;
+}
+
+/*search box input*/
+#id_q{
+display: inline-block;
+width:150px;
+height: 25px;
+}
+
+
+div#language{
+width: 150px;
+height: 50px;
+margin: 0px 0;
+float:right;
+}
+
+div#language 
+{height:25 px;} /* Changes the height and bg color of the main menu */
+
+div#language ul
+{margin:0px; padding:0px;}
+
+div#language ul li
+{display:inline; float:left; list-style:none; margin-left:15px; position:relative; height:25px; width: 150px;
+text-decoration:none; /*No Underline*/
+}
+
+div#language li a
+{
+font-family:Helvetica;
+color:#152e55;
+font-size:20px;
+text-decoration:none;
+} /* Changes the link color of items on the main menu */
+
+div#language li a:hover
+{
+}/* Changes the hover color of items on the main menu */
+
+
+div#language li ul
+{margin:0px; padding:0px; display:none; position:absolute; left:0px; z-index: 99; top:25px; background-color:#FFF;} /* Only edit the last 2 items - set the top margin and background color of the submenus */
+
+div#language li:hover ul
+{display:block; width:150px;} /* sets the width of the submenus */
+
+div#language li li
+{list-style:none; display:list-item;} /* DO NOT EDIT */
+
+div#language li li a
+{
+font-family:Helvetica;
+color:#152e55;
+font-size:20px;
+text-decoration:none; /*No Underline*/
+} /* Changes the link color of items in the submenu */
+
+div#language li li a:hover
+{
+color:#152e55;
+text-decoration:none; /*No Underline*/
+} /* Changes the hover color of items in the submenu */
+
+
+div.cart_box{
+    font-size:20px;
+	color:#152e55;
+	font-family:Arial, Helvetica, sans-serif;
+	float:right;
+	top:10px;
+	right:10px;
+}
+
+#navigation{
+	MARGIN-RIGHT: auto; /*Center*/
+	MARGIN-LEFT: auto;
+	max-width: 1200px;
+	height:auto;
+	font-family:Arial,sans-serif;
+	text-align:center;
+}
+#navigation ul{
+	list-style:none;
+	margin-bottom: 0;
+}
+#navigation ul li{
+	float:left;
+	margin-right:15px;
+	margin-bottom: 0px;
+	text-align: center;
+	line-height: 100%;
+}
+#navigation ul li a{
+	color:White;
+	font-family: Arial,sans-serif;
+	text-align: center;
+	font-size:large;
+	font-weight:bold;
+	text-decoration:none;
+	line-height: 100%;
+	word-wrap: normal;
+}
+
+#navigation ul li a:hover{
+	color:#CCFFFF;
+}
+#sidebar{
+	width:200px;
+	float:left;;
+}
+#content{
+	width:700px;
+	float:left;
+}
+
+#fr{
+	float:right;
+}
+
+#footerContainer{
+	position:absolute;
+	bottom:0;
+	width:100%;
+	height:60px;/*footer的高度*/
+	background:rgb(104, 195, 159);
+	MARGIN-RIGHT: auto; /*Center*/
+	MARGIN-LEFT: auto;
+	/*padding:10px;*/
+}
+
+#footer{
+	clear:both;
+	color:White;
+	text-align:center;
+}
+
+#footer ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;	
+}
+
+#footer ul li{
+    display: inline;
+}
+
+#footer ul li a{
+	color:White;
+	font-weight:bold;
+	text-decoration:none;
+	font-size:small;
+	font-family:Arial,sans-serif;
+}
+
+#footer ul li a:hover{
+	color:CCFFFF;
+	font-weight:bold;
+	text-decoration:underline;
+} 
+
+#copyright ul li a:hover{
+	color:White;
+	text-decoration:none;
+} 
+
+
+/*About Page*/
+
+#about {
+	margin: 30px auto;
+    width: 700px;
+}
+
+#about h2{
+	margin:25px 0 10px 0;
+	clear:both;
+    font-weight: bold;
+    font-size: large;
+    font-family: "微软雅黑";
+    margin-top: 10px;
+    height: 35px;
+    color: #5E5E5E;
+}
+
+#about p{
+	text-indent:2em;
+	color: #778489;
+	line-height: 170%;
+	word-wrap: break-word;
+	font-size: 16px;
+	font-family: 'microsoft yahei', arial;
+	text-align:justify;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#about .smart-green label {
+display: block;
+margin: 0px 0px 5px;
+}
+#about .smart-green label>span {
+width: 1100px;    /*set span width larger so span display on new line*/
+float: left;
+font-weight:bold;
+font-size: large;
+font-family:'microsoft yahei';
+margin-top: 10px;
+height: 35px;
+color: #5E5E5E;
+}
+#about .smart-green label>span>a {
+float: left;
+font-weight:normal;
+font-size: 16px;
+font-family:'microsoft yahei', arial;
+margin-top: 10px;
+line-height: 170%;
+color: #778489;
+text-align:justify;
+}
+
+#mini_banner ul li{
+    display: inline;
+}
+
+#mini_banner
+{
+}
+.banner_block_1{
+ float: left;
+ margin-left: 0px;
+ margin-right: 0px;
+ display: inline-block;
+}
+.banner_block_2{
+ float: left;
+ margin-left: 0px;
+ margin-right: 0px;
+ display: inline-block;
+}
+.banner_block_3{
+ float: left;
+ margin-left: 0px;
+ margin-right: 0px;
+ display: inline-block;
+}
+.banner_block_4{
+ float: left;
+ margin-left: 0px;
+ margin-right: 0px;
+ display: inline-block;
+}
+
+.banner_block_1:hover{
+    opacity: 0.6;
+    filter: alpha(opacity=100); /* For IE8 and earlier */
+}
+.banner_block_2:hover{
+    opacity: 0.6;
+    filter: alpha(opacity=100); /* For IE8 and earlier */
+}
+.banner_block_3:hover{
+    opacity: 0.6;
+    filter: alpha(opacity=100); /* For IE8 and earlier */
+}
+.banner_block_4:hover{
+    opacity: 0.6;
+    filter: alpha(opacity=100); /* For IE8 and earlier */
+}
+
+a.skip_link{
+	position:absolute;
+	left:-1000px;
+	top:-1000px;
+}
+
+/* category page styles */
+div.product_thumbnail{
+	text-align:center;
+	float:left;
+	width:150px;
+	height:200px;
+}
+
+/* product page styles */
+div.product_image{
+	float:left;
+	padding:0 10px 10px 0;
+}
+
+/* chapter 4 added styles */
+ul.errorlist{
+	background-color:Red;
+	color:White;
+	padding:2px;
+}
+
+/* styles for shopping cart page */
+table#shopping_cart{
+	width:100%;
+	border-collapse:collapse;
+	color:#616161;
+}
+h1,caption{
+	text-align:left;
+	font-size:x-large; 
+	margin-bottom:15px;
+	color:Black;
+}
+th,td{
+	text-align:left;
+	padding:3px;
+}
+thead th{
+	color:White;
+	background-color:#616161;
+}
+tfoot th{
+	height:40px;
+}
+
+table#shopping_cart th.right, td.right{
+	text-align:right;
+}
+a.cart{
+	color:DarkOrange;
+}
+h3{
+	color:White;
+	padding:3px;
+	margin-bottom:6px;
+}
+
+ul#categories{
+	list-style:none;
+}
+ul#categories li{
+	font-weight:bold;
+	color:#616161;	
+}
+ul#categories li a{
+	text-decoration:none;
+}
+
+div#footer a{
+	color:White;
+	font-size:small;
+	text-decoration:underline;	
+	font-weight:normal;
+	margin-right:10px;
+}
+
+/* checkout styles CH05 */
+fieldset.checkout{
+	padding-bottom:15px;
+	margin-bottom:15px;	
+}
+
+fieldset.checkout legend{ 
+	font-weight:bold;
+	color:Black;
+	margin-left:15px;
+}
+
+fieldset.checkout table{
+	border-collapse:collapse;
+	width:100%;
+}
+
+fieldset.checkout table th{
+	text-align:right;
+	width:200px;
+	font-weight:normal;
+}
+
+fieldset.checkout input {
+	font-family:Courier;
+	font-size:Large;	
+}
+
+table#receipt{
+	width:100%;
+	border-collapse:collapse;
+}
+
+/* user login / register styles CH06 */
+table#register{
+	width:100%;
+}
+table#register th, td{
+	vertical-align:top;
+}
+fieldset.my_account{
+	padding:10px;
+}
+fieldset.my_account legend{
+	font-weight:bold;
+}
+fieldset.my_account ul{
+	list-style:none;
+}
+fieldset.my_account ul li{
+	margin-bottom:5px;
+}
+
+#add_review{
+	cursor:pointer;	
+}
+.hidden{display:none;}
+.visible{display:block;}
+.new_review{background-color:Pink;}
+
+#tags a{
+	color:DarkOrange;
+}
+
+#loading{
+	display:none;
+	position:fixed;
+	top:0;
+	left:45%;
+	background-color:Pink;
+	width: 200px;
+	font-size:medium;
+	color:Black;
+	font-weight:bold;
+	padding:2px;
+	border:solid 1px Red; 
+	text-align: center;
+	z-index:100;	
+}
+
+#noscript{
+	position:fixed;
+	top:0;left:0;
+	width:100%;
+	background-color:Red;
+	color:White;
+	font-weight:bold;
+	padding:5px;
+	text-align:center;
+}
+#noscript_padder{
+	height:30px;
+}
+
+
+
+/*Login Page Button and input box*/
+
+/*Button 默认的 Template*/
+
+.button {  
+    display: inline-block;  
+    zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */  
+    *display: inline;  
+    vertical-align: baseline;  
+    margin: 0 2px;  
+    outline: none;  
+    cursor: pointer;  
+    text-align: center;  
+    text-decoration: none;  
+    font: 14px/100% Arial, Helvetica, sans-serif;  
+    padding: .5em 2em .55em;  
+    text-shadow: 0 1px 1px rgba(0,0,0,.3);  
+    -webkit-border-radius: .5em;   
+    -moz-border-radius: .5em;  
+    border-radius: .5em;  
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);  
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);  
+    box-shadow: 0 1px 2px rgba(0,0,0,.2);  
+}  
+.button:hover {  
+    text-decoration: none;  
+}  
+.button:active {  
+    position: relative;  
+    top: 1px;  
+}  
+
+/* Button blue color*/  
+.blue {  
+    color: #d9eef7;  
+    border: solid 1px #0076a3;  
+    background: #0095cd;  
+    background: -webkit-gradient(linear, left top, left bottom, from(#00adee), to(#0078a5));  
+    background: -moz-linear-gradient(top,  #00adee,  #0078a5);  
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#00adee', endColorstr='#0078a5');  
+}  
+.blue:hover {  
+    background: #007ead;  
+    background: -webkit-gradient(linear, left top, left bottom, from(#0095cc), to(#00678e));  
+    background: -moz-linear-gradient(top,  #0095cc,  #00678e);  
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#0095cc', endColorstr='#00678e');  
+}  
+.blue:active {  
+    color: #80bed6;  
+    background: -webkit-gradient(linear, left top, left bottom, from(#0078a5), to(#00adee));  
+    background: -moz-linear-gradient(top,  #0078a5,  #00adee);  
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#0078a5', endColorstr='#00adee');  
+}
+
+#username,#password{
+ font-size: 15px;
+ font-weight: bold;
+ color: #49494a;
+}
+
+#username_box,#password_box{
+ border-radius: 10px;
+ font-size: 15px;
+ color: #49494a;
+}

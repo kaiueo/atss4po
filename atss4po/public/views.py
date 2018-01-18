@@ -5,17 +5,10 @@ from flask_login import login_required, login_user, logout_user
 
 from atss4po.extensions import login_manager
 from atss4po.public.forms import LoginForm
-from atss4po.user.forms import RegisterForm
 from atss4po.user.models import User
 from atss4po.utils import flash_errors
 
 blueprint = Blueprint('public', __name__, static_folder='../static')
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    """Load user by ID."""
-    return User.get_by_id(int(user_id))
 
 
 @blueprint.route('/', methods=['GET', 'POST'])
@@ -33,27 +26,6 @@ def home():
             flash_errors(form)
     return render_template('public/home.html', form=form)
 
-
-@blueprint.route('/logout/')
-@login_required
-def logout():
-    """Logout."""
-    logout_user()
-    flash('You are logged out.', 'info')
-    return redirect(url_for('public.home'))
-
-
-@blueprint.route('/register/', methods=['GET', 'POST'])
-def register():
-    """Register new user."""
-    form = RegisterForm(request.form)
-    if form.validate_on_submit():
-        User.create(username=form.username.data, email=form.email.data, password=form.password.data, active=True)
-        flash('Thank you for registering. You can now log in.', 'success')
-        return redirect(url_for('public.home'))
-    else:
-        flash_errors(form)
-    return render_template('public/register.html', form=form)
 
 
 @blueprint.route('/about/')
