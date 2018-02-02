@@ -67,5 +67,30 @@ def from_url():
         result['data'] = []
     return jsonify(result)
 
+@blueprint.route('/weibos', methods=['POST'])
+@csrf_protect.exempt
+@auth.login_required
+def from_weibos():
+    try:
+        remote = request.json
+        weibos = remote['weibos']
+        count = remote['count']
+        summary = autosum.summary_from_weibos(weibos, count)
+        result = {}
+        result['code'] = error_status.success.code
+        result['msg'] = error_status.success.msg
+        result['data'] = summary
+    except(KeyError):
+        result = {}
+        result['code'] = error_status.format_error.code
+        result['msg'] = error_status.format_error.msg
+        result['data'] = []
+    except:
+        result = {}
+        result['code'] = error_status.unknown_error.code
+        result['msg'] = error_status.unknown_error.msg
+        result['data'] = []
+    return jsonify(result)
+
 
 
