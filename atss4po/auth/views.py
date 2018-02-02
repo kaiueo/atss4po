@@ -9,6 +9,7 @@ from atss4po.auth.forms import RegisterForm
 from atss4po.user.models import User
 from atss4po.utils import flash_errors
 
+
 blueprint = Blueprint('auth', __name__, url_prefix='/auth',static_folder='../static')
 
 

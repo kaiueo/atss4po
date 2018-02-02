@@ -6,6 +6,7 @@
   <h1>登录</h1>
     <br/>
     {{ wtf.quick_form(form) }}
+    <br/>
     <p><em>新用户?</em><a href="{{ url_for("auth.register") }}">点此注册</a></p>
 </div>
 {% endblock %}

@@ -6,7 +6,8 @@ from flask_login import UserMixin
 
 from atss4po.database import Column, Model, SurrogatePK, db, reference_col, relationship
 from atss4po.extensions import bcrypt
-
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
+from flask import current_app
 
 class Role(SurrogatePK, Model):
     """A role for a user."""
@@ -55,6 +56,22 @@ class User(UserMixin, SurrogatePK, Model):
         """Check password."""
         return bcrypt.check_password_hash(self.password, value)
 
+    def generate_auth_token(self, expiration=3600):
+        s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
+        return s.dumps({'id': self.id})
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None  # valid token, but expired
+        except BadSignature:
+            return None  # invalid token
+        user = User.query.filter_by(id=data['id']).first()
+        return user
+
     @property
     def full_name(self):
         """Full user name."""
@@ -63,3 +80,27 @@ class User(UserMixin, SurrogatePK, Model):
     def __repr__(self):
         """Represent instance as a unique string."""
         return '<User({username!r})>'.format(username=self.username)
+
+class Article(SurrogatePK, Model):
+    __tablename__ = 'articles'
+    filepath = Column(db.String(1000), unique=True, nullable=False)
+    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    summarized = Column(db.Boolean(), default=False)
+
+    def __init__(self, filepath):
+        """Create instance."""
+        db.Model.__init__(self, filepath=filepath)
+    def __repr__(self):
+        return '<Article({filepath})>'.format(filepath=self.filepath)
+
+class SummarizedArticle(SurrogatePK, Model):
+    __tablename__ = 'summarized_articles'
+    text = Column(db.Text, nullable=False)
+    summarization = Column(db.Text, nullable=False)
+    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+
+    def __init__(self, text, summarization):
+        db.Model.__init__(self, text=text, summarization=summarization)
+
+    def __repr__(self):
+        return '<Article()>'
