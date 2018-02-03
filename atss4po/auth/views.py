@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for, session, make_response
 from flask_login import login_required, login_user, logout_user
 
 from atss4po.extensions import login_manager
@@ -8,6 +8,7 @@ from atss4po.auth.forms import LoginForm
 from atss4po.auth.forms import RegisterForm
 from atss4po.user.models import User
 from atss4po.utils import flash_errors
+from .utils import get_basic_auth_token
 
 
 blueprint = Blueprint('auth', __name__, url_prefix='/auth',static_folder='../static')
@@ -57,9 +58,13 @@ def login():
             user = User.query.filter_by(username=form.username.data).first()
             if user is not None and user.check_password(form.password.data):
                 login_user(user)
-                flash('您已成功登陆', 'success')
+                token = user.generate_auth_token(expiration=3600)
+                encrypt_token = get_basic_auth_token(token)
                 redirect_url = url_for('public.home')
-                return redirect(redirect_url)
+                response = redirect(redirect_url)
+                response.set_cookie('token', encrypt_token)
+                flash('您已成功登陆', 'success')
+                return response
             else:
                 flash('请输入正确的账号和密码', 'danger')
     return render_template('auth/login.html', form=form)

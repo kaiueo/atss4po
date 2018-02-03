@@ -2,7 +2,7 @@
 """The app module, containing the app factory function."""
 from flask import Flask, render_template
 
-from atss4po import commands, public, user, auth, api_v1
+from atss4po import commands, public, user, auth, api_v1, front
 from atss4po.assets import assets
 from atss4po.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate, bootstrap
 from atss4po.settings import ProdConfig
@@ -45,6 +45,7 @@ def register_blueprints(app):
     app.register_blueprint(api_v1.auth.blueprint)
     app.register_blueprint(api_v1.summary.blueprint)
     app.register_blueprint(api_v1.article.blueprint)
+    app.register_blueprint(front.views.blueprint)
     return None
 
 

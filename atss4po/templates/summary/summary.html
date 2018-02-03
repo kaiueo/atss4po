@@ -1,0 +1,74 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<div class="container" ng-app="myApp" ng-controller="formCtrl">
+    <br>
+  <div class="row" >
+    <div class="col-xs-5">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">输入文本</h3>
+        </div>
+        <div class="panel-body">
+          <form role="form" novalidate>
+              URL：<textarea id="url_sum" ng-model="url"  class="form-control" rows="1"></textarea>
+
+              <br>正文：<textarea id="text_sum" ng-model="text" class="form-control" rows="24"></textarea>
+              <br><button type="button" id="getSummary" class="form-control btn btn-success" ng-click="getSummary()">生成摘要</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-7">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title">摘要</h3>
+        </div>
+        <div class="panel-body">
+         摘要：
+          <ul style="padding-left: 40px;">
+          <span ng-bind-html="sentences"></span>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var app = angular.module('myApp', []);
+app.controller('formCtrl', function($scope, $http, $sce) {
+    {#$http.get('/static/testdata/test4.json')#}
+    {#    .success(function(data){#}
+    {#        $scope.title = data.title;#}
+    {#        $scope.text = data.text;#}
+    {#    });#}
+	$scope.getSummary = function () {
+        // POST提交数据到接口，/api/getSummary
+
+        var mydata = new Object();
+        if($('#url_sum').val().length==0){
+            mydata.type = 0
+            mydata.text = $('#text_sum').val()
+            mydata.count = 3
+        }else{
+            mydata.type = 1
+            mydata.url = $('#url_sum').val()
+            mydata.count = 3
+        }
+
+        results = "";
+        token = $.cookie('token')
+		$http.post('/api/v1/summary/', mydata, {headers: {'Authorization': token}})
+        .success(function(data){
+            $scope.text = data['data']['article']
+            angular.forEach(data['data']['summary'], function(sentence){
+              results = results + '<li>' + sentence + '</li>';
+            });
+            $scope.sentences= $sce.trustAsHtml(results);
+        });
+	}
+});
+</script>
+{% endblock %}
+

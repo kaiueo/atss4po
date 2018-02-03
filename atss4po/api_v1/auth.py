@@ -15,9 +15,7 @@ blueprint = Blueprint('api_v1_auth', __name__, url_prefix='/api/v1/auth',static_
 
 @auth.verify_password
 def verify_password(username_or_token, password):
-    if isinstance(current_user, AnonymousUserMixin) :
-        g.current_user = current_user
-        return True
+    print(username_or_token)
     user = User.verify_auth_token(username_or_token)
     if not user:
         user = User.query.filter_by(username=username_or_token).first()
