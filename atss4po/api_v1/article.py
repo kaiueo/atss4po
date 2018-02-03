@@ -37,6 +37,7 @@ def get_article():
         result['data'] = {}
     return jsonify(result)
 
+
 @blueprint.route('/upload', methods=['POST'])
 @csrf_protect.exempt
 @auth.login_required

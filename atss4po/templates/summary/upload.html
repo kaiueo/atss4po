@@ -1,0 +1,61 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<div class="container" ng-app="myApp" ng-controller="formCtrl">
+    <br>
+  <div class="row" >
+    <div class="col-xs-6">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">待摘要文本</h3>
+            <p id="article_id" style="display: none;"></p>
+        </div>
+        <div class="panel-body">
+          <form role="form" novalidate>
+     正文：<br/><br/><textarea readonly id="text_unsum" ng-model="text" class="form-control" rows="24"></textarea>
+<br/>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-6">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title">摘要</h3>
+        </div>
+        <div class="panel-body">
+         摘要：<br/><br/>
+          <textarea id="text_sum" ng-model="summarization" class="form-control" rows="20"></textarea>
+            <br><button type="button" id="uploadSummary" class="form-control btn btn-success" ng-click="uploadSummary()">提交摘要</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var app = angular.module('myApp', []);
+app.controller('formCtrl', function($scope, $http, $sce) {
+    token = $.cookie('token')
+    $http.get('/api/v1/article/get', {headers: {'Authorization': token}})
+        .success(function(data){
+            $scope.text = data.data['text'];
+            $('#article_id').text(data.data['id'])
+        });
+	$scope.uploadSummary = function () {
+        var mydata = new Object();
+        mydata.id = $('#article_id').text()
+        mydata.text = $scope.text
+        mydata.summarization = $('#text_sum').val()
+
+		$http.post('/api/v1/article/upload', mydata, {headers: {'Authorization': token}})
+        .success(function(data){
+            alert('success')
+            window.location.reload()
+        });
+	}
+});
+</script>
+{% endblock %}
+
