@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
 from flask import Blueprint, flash, redirect, render_template, request, url_for, session, make_response
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 
 from atss4po.extensions import login_manager
 from atss4po.auth.forms import LoginForm
@@ -35,7 +35,7 @@ def register():
     """Register new user."""
     form = RegisterForm(request.form)
     if form.validate_on_submit():
-        User.create(username=form.username.data, email=form.email.data, password=form.password.data, active=True)
+        User.create(username=form.username.data, email=form.email.data, password=form.password.data, biography=form.biography.data, active=True)
         flash('注册成功', 'success')
         return redirect(url_for('public.home'))
     else:
@@ -68,3 +68,7 @@ def login():
             else:
                 flash('请输入正确的账号和密码', 'danger')
     return render_template('auth/login.html', form=form)
+
+@blueprint.route('/detail/')
+def detail():
+    return redirect(url_for('static', filename=current_user.avatar))

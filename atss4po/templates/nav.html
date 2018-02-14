@@ -6,22 +6,19 @@
                     <ul>
                         <div class="navIEPadder">
                             <li>
-                                <a href="/index/">主页</a>
+                                <a href="{{ url_for('public.home') }}">主页</a>
                             </li>
                             <li>
-                                <a href="/blog/">技术博客</a>
+                                <a href="{{ url_for('summary.home') }}">摘要</a>
                             </li>
                             <li>
-                                <a href="/downloads/list">下载</a>
+                                <a href="{{ url_for('summary.upload') }}">上传摘要</a>
                             </li>
                             <li>
-                                <a href="/api/v1.0/pipeline/?lang=zh&annotators=segment,pos,ner&text=我爱吃北京烤鸭" target="_blank">API接口</a>
+                                <a href="">文档</a>
                             </li>
                             <li>
-                                <a href="http://deepnlp.readthedocs.io/" target="_blank">文档</a>
-                            </li>
-                            <li>
-                                <a href="/about/">关于</a>
+                                <a href="{{ url_for('public.about') }}">关于</a>
                             </li>
                         </div>
 

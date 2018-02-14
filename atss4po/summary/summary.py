@@ -70,7 +70,7 @@ class AutoSummary(object):
         try:
             parser = PlaintextParser.from_string(text, Tokenizer(self.language))
             self.save_article(parser)
-            article = self.parser_to_text(parser.document)
+            article = text
             for sentence in self.summarizer(parser.document, count):
                 list.append(str(sentence))
         except(LinAlgError):

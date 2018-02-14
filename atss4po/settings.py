@@ -10,6 +10,8 @@ class Config(object):
     APP_DIR = os.path.abspath(os.path.dirname(__file__))  # This directory
     PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, os.pardir))
     DATA_PATH = os.path.abspath(os.path.join(APP_DIR, 'data'))
+    STATIC_PATH = os.path.abspath(os.path.join(APP_DIR, 'static'))
+    AVATAR_PATH = os.path.abspath(os.path.join(STATIC_PATH, 'avatars'))
     BCRYPT_LOG_ROUNDS = 13
     ASSETS_DEBUG = False
     DEBUG_TB_ENABLED = False  # Disable Debug toolbar

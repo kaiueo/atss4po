@@ -34,14 +34,40 @@
 
 </div>
 
+    <div id='success_modal' class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 id='return_message_title'class="modal-title">成功</h4>
+      </div>
+      <div id='return_message' class="modal-body">
+        <p>上传成功！</p>
+      </div>
+      <div class="modal-footer">
+<button id="cancel_button" type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+        <a id="confirm_button" href="{{ url_for('summary.upload') }}" type="button" class="btn btn-primary">确定</a>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <script>
 var app = angular.module('myApp', []);
 app.controller('formCtrl', function($scope, $http, $sce) {
     token = $.cookie('token')
     $http.get('/api/v1/article/get', {headers: {'Authorization': token}})
         .success(function(data){
-            $scope.text = data.data['text'];
+            if(data['code']==3){
+                $('#return_message_title').text('提示')
+                $('#return_message').text('暂时没有待摘要文章，请稍后再试！')
+                $('#confirm_button').toggle()
+                $('#success_modal').modal()
+            }else{
+                $scope.text = data.data['text'];
             $('#article_id').text(data.data['id'])
+            }
+
         });
 	$scope.uploadSummary = function () {
         var mydata = new Object();
@@ -51,8 +77,8 @@ app.controller('formCtrl', function($scope, $http, $sce) {
 
 		$http.post('/api/v1/article/upload', mydata, {headers: {'Authorization': token}})
         .success(function(data){
-            alert('success')
-            window.location.reload()
+            $('#cancel_button').toggle()
+            $('#success_modal').modal()
         });
 	}
 });

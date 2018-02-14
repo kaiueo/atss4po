@@ -21,6 +21,7 @@ def home():
     return render_template('summary/summary.html')
 
 @blueprint.route('/upload', methods=['GET', 'POST'])
+@login_required
 def upload():
     return render_template('summary/upload.html')
 

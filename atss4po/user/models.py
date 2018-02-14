@@ -8,6 +8,8 @@ from atss4po.database import Column, Model, SurrogatePK, db, reference_col, rela
 from atss4po.extensions import bcrypt
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 from flask import current_app
+from .identicon import Identicon
+import time
 
 class Role(SurrogatePK, Model):
     """A role for a user."""
@@ -39,10 +41,27 @@ class User(UserMixin, SurrogatePK, Model):
     last_name = Column(db.String(30), nullable=True)
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
+    last_use = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    uploads = Column(db.Integer, nullable=False, default=0)
+    use = Column(db.Integer, nullable=False, default=0)
+    avatar = Column(db.String(1000), unique=True, nullable=False)
+    biography = Column(db.String(1000), default="这家伙很懒，没有介绍")
+
+    def get_today_use(self):
+        last_use = self.last_use
+        last_use = last_use.strftime('%Y%m%d')
+        today = time.strftime('%Y%m%d', time.localtime(time.time()))
+        if today == last_use:
+            use = self.use
+        else:
+            use = 0
+        return use
 
     def __init__(self, username, email, password=None, **kwargs):
         """Create instance."""
-        db.Model.__init__(self, username=username, email=email, **kwargs)
+        avatar_generator = Identicon(username)
+        avatar = avatar_generator.generate()
+        db.Model.__init__(self, username=username, email=email, avatar=avatar,**kwargs)
         if password:
             self.set_password(password)
         else:

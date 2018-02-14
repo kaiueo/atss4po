@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Public forms."""
 from flask_wtf import Form
-from wtforms import PasswordField, StringField, BooleanField, SubmitField
+from wtforms import PasswordField, StringField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, Length, Email
 from ..user.models import User
 
@@ -31,6 +31,7 @@ class RegisterForm(Form):
                              validators=[DataRequired(), Length(min=6, max=40)])
     confirm = PasswordField('确认密码',
                             [DataRequired(), EqualTo('password', message='两次密码不一致')])
+    biography = TextAreaField('个人简介', default="这家伙很懒，没有介绍")
     submit = SubmitField('注册')
 
     def __init__(self, *args, **kwargs):

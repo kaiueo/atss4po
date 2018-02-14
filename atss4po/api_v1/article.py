@@ -14,6 +14,7 @@ from ..summary import autosum
 import random
 from .utils import error_status, encrypt, decrypt
 from atss4po.database import db
+import traceback
 
 blueprint = Blueprint('api_v1_article', __name__, url_prefix='/api/v1/article',static_folder='../static')
 
@@ -49,6 +50,8 @@ def upload_summary():
         summarized_article = SummarizedArticle(text, summarization)
         article = Article.query.filter_by(id=article_id).first()
         article.summarized = True
+        g.current_user.uploads = g.current_user.uploads + 1
+        db.session.add(g.current_user)
         db.session.add(article)
         db.session.add(summarized_article)
         db.session.commit()
@@ -62,6 +65,7 @@ def upload_summary():
         result['msg'] = error_status.format_error.msg
         result['data'] = []
     except:
+        traceback.print_exc()
         result = {}
         result['code'] = error_status.unknown_error.code
         result['msg'] = error_status.unknown_error.msg
