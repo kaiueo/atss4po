@@ -44,6 +44,7 @@ def get_article():
 @auth.login_required
 def upload_summary():
     try:
+        print(request.json)
         article_id = decrypt(request.json['id'])
         text = request.json['text']
         summarization = request.json['summarization']
