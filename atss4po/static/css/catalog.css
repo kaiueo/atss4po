@@ -5,7 +5,7 @@ html,body{
     position:absolute;   
 	height: 100%;
     width: 100%;
-	background-color:#White;
+	background-color:white;
 }
 #main{
 	margin: 0 auto;
@@ -49,7 +49,7 @@ text-shadow: 1px 1px 1px #949494;
 #bannerContainer{
 	MARGIN-RIGHT: auto; /*Center*/
 	MARGIN-LEFT: auto;
-	max-width: 1200px;
+	/*max-width: 1200px;*/
 	padding:10px;	
 }
 div#logo{
@@ -83,7 +83,7 @@ float:right;
 }
 
 div#language 
-{height:25 px;} /* Changes the height and bg color of the main menu */
+{height:25px;} /* Changes the height and bg color of the main menu */
 
 div#language ul
 {margin:0px; padding:0px;}
@@ -142,7 +142,7 @@ div.cart_box{
 #navigation{
 	MARGIN-RIGHT: auto; /*Center*/
 	MARGIN-LEFT: auto;
-	max-width: 1200px;
+	/*max-width: 1200px;*/
 	height:auto;
 	font-family:Arial,sans-serif;
 	text-align:center;
@@ -220,7 +220,7 @@ div.cart_box{
 }
 
 #footer ul li a:hover{
-	color:CCFFFF;
+	color:#CCFFFF;
 	font-weight:bold;
 	text-decoration:underline;
 } 
