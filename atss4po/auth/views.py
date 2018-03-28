@@ -70,5 +70,7 @@ def login():
     return render_template('auth/login.html', form=form)
 
 @blueprint.route('/detail/')
+@login_required
 def detail():
-    return redirect(url_for('static', filename=current_user.avatar))
+    return render_template('users/user.html')
+

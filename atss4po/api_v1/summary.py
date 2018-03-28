@@ -51,19 +51,19 @@ def get_summary():
             result = {}
             result['code'] = error_status.format_error.code
             result['msg'] = error_status.format_error.msg
-            result['data'] = []
+            result['data'] = {}
         except:
             traceback.print_exc()
             result = {}
             result['code'] = error_status.unknown_error.code
             result['msg'] = error_status.unknown_error.msg
-            result['data'] = []
+            result['data'] = {}
         return jsonify(result)
     else:
         result = {}
         result['code'] = error_status.no_amount.code
         result['msg'] = error_status.no_amount.msg
-        result['data'] = []
+        result['data'] = {}
         return jsonify(result)
 
 #
