@@ -15,17 +15,17 @@
     <div class="col-lg-4">
       <h2><i class="fa fa-code"></i> 进行摘要</h2>
       <p>输入您想要进行摘要的文章或网址，选择摘要的长度，轻松生成文章摘要。</p>
-      <p><a class="btn btn-default" href="http://getbootstrap.com/">开始摘要 &raquo;</a></p>
+      <p><a class="btn btn-default" href="{{ url_for('summary.home') }}">开始摘要 &raquo;</a></p>
     </div>
     <div class="col-lg-4">
       <h2><i class="fa fa-flask"></i> 上传摘要</h2>
       <p>通过上传您的摘要，不断优化我们的算法，提高摘要质量，同时提升您每天摘要的额度。</p>
-      <p><a href="http://www.sqlalchemy.org/" class="btn btn-default">开始上传 &raquo;</a></p>
+      <p><a href="{{ url_for('summary.upload') }}" class="btn btn-default">开始上传 &raquo;</a></p>
    </div>
     <div class="col-lg-4">
       <h2><i class="fa fa-edit"></i> 算法介绍</h2>
       <p>对本网站所采用的算法感兴趣？快来加入到学习自然语言处理的队伍中吧！</p>
-      <p><a href="http://wtforms.simplecodes.com/" class="btn btn-default">学习算法 &raquo;</a></p>
+      <p><a href="{{ url_for('public.algroithm') }}" class="btn btn-default">学习算法 &raquo;</a></p>
     </div>
   </div><!-- /.row -->
 </div>

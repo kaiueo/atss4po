@@ -1,0 +1,724 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <section class="col-article" style="
+    box-sizing: border-box;
+    margin: auto;
+    padding: 0 10px 0;
+    max-width: 1000px;"><h1 class="col-article-title art-title">使用TextRank算法为文本生成关键字和摘要</h1>
+        <div class="c-markdown"><p>TextRank算法基于PageRank，用于为文本生成关键字和摘要。</p>
+            <p>目录[-]</p>
+            <ul class="ul-level-0" style="margin:10px 0 10px 20px">
+                <li><a href="" target="_blank">PageRank</a></li>
+                <li><a href="" target="_blank">使用TextRank提取关键字</a></li>
+                <li><a href="" target="_blank">使用TextRank提取关键短语</a></li>
+                <li><a href="" target="_blank">使用TextRank提取摘要</a></li>
+                <li><a href="" target="_blank">实现TextRank</a></li>
+            </ul>
+            <p>TextRank算法基于PageRank，用于为文本生成关键字和摘要。其论文是：
+            </p>
+            <blockquote><p>Mihalcea R, Tarau P. TextRank: Bringing order into texts[C]. Association for Computational
+                Linguistics, 2004.</p></blockquote>
+            <p>先从PageRank讲起。
+            </p>
+            <h2>PageRank</h2>
+            <p>PageRank最开始用来计算网页的重要性。整个www可以看作一张有向图图，节点是网页。如果网页A存在到网页B的链接，那么有一条从网页A指向网页B的有向边。</p>
+            <p>构造完图后，使用下面的公式：
+            </p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/17.png') }}"
+                        class="" style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>
+
+                S(Vi)是网页i的中重要性（PR值）。d是阻尼系数，一般设置为0.85。In(Vi)是存在指向网页i的链接的网页集合。Out(Vj)是网页j中的链接存在的链接指向的网页的集合。|Out(Vj)|是集合中元素的个数。
+
+                PageRank需要使用上面的公式多次迭代才能得到结果。初始时，可以设置每个网页的重要性为1。上面公式等号左边计算的结果是迭代后网页i的PR值，等号右边用到的PR值全是迭代前的。
+
+                举个例子：
+
+            </p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/18.png') }}"
+                        class="" style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>
+                上图表示了三张网页之间的链接关系，直觉上网页A最重要。可以得到下面的表：</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th style="text-align:left">
+                            <div class="table-header"><p>结束\起始</p></div>
+                        </th>
+                        <th style="text-align:left">
+                            <div class="table-header"><p>A</p></div>
+                        </th>
+                        <th style="text-align:left">
+                            <div class="table-header"><p>B</p></div>
+                        </th>
+                        <th style="text-align:left">
+                            <div class="table-header"><p>C</p></div>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>A</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>1</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>1</p></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>B</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>C</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>
+                横栏代表其实的节点，纵栏代表结束的节点。若两个节点间有链接关系，对应的值为1。
+
+                根据公式，需要将每一竖栏归一化（每个元素/元素之和），归一化的结果是：
+
+            </p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th style="text-align:left">
+                            <div class="table-header"><p>结束\起始</p></div>
+                        </th>
+                        <th style="text-align:left">
+                            <div class="table-header"><p>A</p></div>
+                        </th>
+                        <th style="text-align:left">
+                            <div class="table-header"><p>B</p></div>
+                        </th>
+                        <th style="text-align:left">
+                            <div class="table-header"><p>C</p></div>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>A</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>1</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>1</p></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>B</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>C</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                        <td style="text-align:left">
+                            <div class="table-cell"><p>0</p></div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>
+                上面的结果构成矩阵M。我们用matlab迭代100次看看最后每个网页的重要性：</p>
+
+            <pre class="prism-token token  language-javascript">M <span class="token operator">=</span> <span
+                    class="token punctuation">[</span><span class="token number">0</span> <span
+                    class="token number">1</span> <span class="token number">1</span>
+    <span class="token number">0</span> <span class="token number">0</span> <span class="token number">0</span>
+    <span class="token number">0</span> <span class="token number">0</span> <span class="token number">0</span><span
+                        class="token punctuation">]</span><span class="token punctuation">;</span>
+
+PR <span class="token operator">=</span> <span class="token punctuation">[</span><span
+                        class="token number">1</span><span class="token punctuation">;</span> <span
+                        class="token number">1</span> <span class="token punctuation">;</span> <span
+                        class="token number">1</span><span class="token punctuation">]</span><span
+                        class="token punctuation">;</span>
+
+<span class="token keyword">for</span> iter <span class="token operator">=</span> <span
+                        class="token number">1</span><span class="token punctuation">:</span><span class="token number">100</span>
+    PR <span class="token operator">=</span> <span class="token number">0.15</span> <span
+                        class="token operator">+</span> <span class="token number">0.85</span><span
+                        class="token operator">*</span>M<span class="token operator">*</span>PR<span
+                        class="token punctuation">;</span>
+    <span class="token function">disp</span><span class="token punctuation">(</span>iter<span class="token punctuation">)</span><span
+                        class="token punctuation">;</span>
+    <span class="token function">disp</span><span class="token punctuation">(</span>PR<span
+                        class="token punctuation">)</span><span class="token punctuation">;</span>
+end</pre>
+            <p>运行结果（省略部分）：
+
+            </p>
+
+            <pre class="prism-token token  language-javascript"><span class="token operator">...</span><span
+                    class="token operator">...</span>
+
+    <span class="token number">95</span>
+
+    <span class="token number">0.4050</span>
+    <span class="token number">0.1500</span>
+    <span class="token number">0.1500</span>
+
+    <span class="token number">96</span>
+
+    <span class="token number">0.4050</span>
+    <span class="token number">0.1500</span>
+    <span class="token number">0.1500</span>
+
+    <span class="token number">97</span>
+
+    <span class="token number">0.4050</span>
+    <span class="token number">0.1500</span>
+    <span class="token number">0.1500</span>
+
+    <span class="token number">98</span>
+
+    <span class="token number">0.4050</span>
+    <span class="token number">0.1500</span>
+    <span class="token number">0.1500</span>
+
+    <span class="token number">99</span>
+
+    <span class="token number">0.4050</span>
+    <span class="token number">0.1500</span>
+    <span class="token number">0.1500</span>
+
+   <span class="token number">100</span>
+
+    <span class="token number">0.4050</span>
+    <span class="token number">0.1500</span>
+    <span class="token number">0.1500</span></pre>
+            <p>最终A的PR值为0.4050，B和C的PR值为0.1500。
+
+                如果把上面的有向边看作无向的（其实就是双向的），那么：
+            </p>
+
+            <pre class="prism-token token  language-javascript">M <span class="token operator">=</span> <span
+                    class="token punctuation">[</span><span class="token number">0</span> <span
+                    class="token number">1</span> <span class="token number">1</span>
+    <span class="token number">0.5</span> <span class="token number">0</span> <span class="token number">0</span>
+    <span class="token number">0.5</span> <span class="token number">0</span> <span class="token number">0</span><span
+                        class="token punctuation">]</span><span class="token punctuation">;</span>
+
+PR <span class="token operator">=</span> <span class="token punctuation">[</span><span
+                        class="token number">1</span><span class="token punctuation">;</span> <span
+                        class="token number">1</span> <span class="token punctuation">;</span> <span
+                        class="token number">1</span><span class="token punctuation">]</span><span
+                        class="token punctuation">;</span>
+
+<span class="token keyword">for</span> iter <span class="token operator">=</span> <span
+                        class="token number">1</span><span class="token punctuation">:</span><span class="token number">100</span>
+    PR <span class="token operator">=</span> <span class="token number">0.15</span> <span
+                        class="token operator">+</span> <span class="token number">0.85</span><span
+                        class="token operator">*</span>M<span class="token operator">*</span>PR<span
+                        class="token punctuation">;</span>
+    <span class="token function">disp</span><span class="token punctuation">(</span>iter<span class="token punctuation">)</span><span
+                        class="token punctuation">;</span>
+    <span class="token function">disp</span><span class="token punctuation">(</span>PR<span
+                        class="token punctuation">)</span><span class="token punctuation">;</span>
+end</pre>
+            <p>运行结果（省略部分）：
+
+            </p>
+
+            <pre class="prism-token token  language-javascript"><span class="token operator">...</span><span
+                    class="token punctuation">.</span><span class="token punctuation">.</span>
+
+    <span class="token number">98</span>
+
+    <span class="token number">1.4595</span>
+    <span class="token number">0.7703</span>
+    <span class="token number">0.7703</span>
+
+    <span class="token number">99</span>
+
+    <span class="token number">1.4595</span>
+    <span class="token number">0.7703</span>
+    <span class="token number">0.7703</span>
+
+   <span class="token number">100</span>
+
+    <span class="token number">1.4595</span>
+    <span class="token number">0.7703</span>
+    <span class="token number">0.7703</span></pre>
+            <p>依然能判断出A、B、C的重要性。
+            </p>
+            <h2>使用TextRank提取关键字</h2>
+            <p>将原文本拆分为句子，在每个句子中过滤掉停用词（可选），并只保留指定词性的单词（可选）。由此可以得到句子的集合和单词的集合。</p>
+            <p>每个单词作为pagerank中的一个节点。设定窗口大小为k，假设一个句子依次由下面的单词组成：</p>
+            <pre class="prism-token token  language-javascript">w1<span class="token punctuation">,</span> w2<span
+                    class="token punctuation">,</span> w3<span class="token punctuation">,</span> w4<span
+                    class="token punctuation">,</span> w5<span class="token punctuation">,</span> <span
+                    class="token operator">...</span><span class="token punctuation">,</span> wn</pre>
+            <p>w1, w2, ..., wk、w2, w3, ...,wk+1、w3, w4, ...,wk+2等都是一个窗口。在一个窗口中的任两个单词对应的节点之间存在一个无向无权的边。</p>
+            <p>基于上面构成图，可以计算出每个单词节点的重要性。最重要的若干单词可以作为关键词。</p>
+            <h2>使用TextRank提取关键短语</h2>
+            <p>
+                参照“使用TextRank提取关键词”提取出若干关键词。若原文本中存在若干个关键词相邻的情况，那么这些关键词可以构成一个关键短语。
+
+                例如，在一篇介绍“支持向量机”的文章中，可以找到三个关键词支持、向量、机，通过关键短语提取，可以得到支持向量机。</p>
+            <h2>使用TextRank提取摘要</h2>
+            <p>将每个句子看成图中的一个节点，若两个句子之间有相似性，认为对应的两个节点之间有一个无向有权边，权值是相似度。</p>
+            <p>通过pagerank算法计算得到的重要性最高的若干句子可以当作摘要。
+
+                论文中使用下面的公式计算两个句子Si和Sj的相似度：
+
+            </p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/19.png') }}"
+                        class="" style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>
+
+                分子是在两个句子中都出现的单词的数量。|Si|是句子i的单词数。
+
+                由于是有权图，PageRank公式略做修改：
+
+            </p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/20.png') }}"
+                        class="" style="cursor: zoom-in;"></span></div>
+            </figure>
+            <h2>实现TextRank</h2>
+            <p>
+                因为要用测试多种情况，所以自己实现了一个基于Python 2.7的TextRank针对<strong>中文文本</strong>的库TextRank4ZH。位于：
+
+                <a href="" target="_blank">https://github.com/someus/TextRank4ZH</a>
+
+                下面是一个例子：</p>
+
+            <pre class="prism-token token  language-javascript">#<span class="token operator">-</span><span
+                    class="token operator">*</span><span class="token operator">-</span> encoding<span
+                    class="token punctuation">:</span>utf<span class="token number">-8</span> <span
+                    class="token operator">-</span><span class="token operator">*</span><span
+                    class="token operator">-</span>
+
+<span class="token keyword">import</span> codecs
+<span class="token keyword">from</span> textrank4zh <span class="token keyword">import</span> TextRank4Keyword<span
+                        class="token punctuation">,</span> TextRank4Sentence
+
+text <span class="token operator">=</span> codecs<span class="token punctuation">.</span><span class="token function">open</span><span
+                        class="token punctuation">(</span><span class="token string">'./text/01.txt'</span><span
+                        class="token punctuation">,</span> <span class="token string">'r'</span><span
+                        class="token punctuation">,</span> <span class="token string">'utf-8'</span><span
+                        class="token punctuation">)</span><span class="token punctuation">.</span><span
+                        class="token function">read</span><span class="token punctuation">(</span><span
+                        class="token punctuation">)</span>
+tr4w <span class="token operator">=</span> <span class="token function">TextRank4Keyword</span><span
+                        class="token punctuation">(</span>stop_words_file<span class="token operator">=</span><span
+                        class="token string">'./stopword.data'</span><span class="token punctuation">)</span>  # 导入停止词
+
+#使用词性过滤，文本小写，窗口为<span class="token number">2</span>
+tr4w<span class="token punctuation">.</span><span class="token function">train</span><span
+                        class="token punctuation">(</span>text<span class="token operator">=</span>text<span
+                        class="token punctuation">,</span> speech_tag_filter<span
+                        class="token operator">=</span>True<span class="token punctuation">,</span> lower<span
+                        class="token operator">=</span>True<span class="token punctuation">,</span> window<span
+                        class="token operator">=</span><span class="token number">2</span><span
+                        class="token punctuation">)</span>
+
+print <span class="token string">'关键词：'</span>
+# <span class="token number">20</span>个关键词且每个的长度最小为<span class="token number">1</span>
+print <span class="token string">'/'</span><span class="token punctuation">.</span><span
+                        class="token function">join</span><span class="token punctuation">(</span>tr4w<span
+                        class="token punctuation">.</span><span class="token function">get_keywords</span><span
+                        class="token punctuation">(</span><span class="token number">20</span><span
+                        class="token punctuation">,</span> word_min_len<span class="token operator">=</span><span
+                        class="token number">1</span><span class="token punctuation">)</span><span
+                        class="token punctuation">)</span>
+
+print <span class="token string">'关键短语：'</span>
+# <span class="token number">20</span>个关键词去构造短语，短语在原文本中出现次数最少为<span class="token number">2</span>
+print <span class="token string">'/'</span><span class="token punctuation">.</span><span
+                        class="token function">join</span><span class="token punctuation">(</span>tr4w<span
+                        class="token punctuation">.</span><span class="token function">get_keyphrases</span><span
+                        class="token punctuation">(</span>keywords_num<span class="token operator">=</span><span
+                        class="token number">20</span><span class="token punctuation">,</span> min_occur_num<span
+                        class="token operator">=</span> <span class="token number">2</span><span
+                        class="token punctuation">)</span><span class="token punctuation">)</span>
+
+tr4s <span class="token operator">=</span> <span class="token function">TextRank4Sentence</span><span
+                        class="token punctuation">(</span>stop_words_file<span class="token operator">=</span><span
+                        class="token string">'./stopword.data'</span><span class="token punctuation">)</span>
+
+# 使用词性过滤，文本小写，使用words_all_filters生成句子之间的相似性
+tr4s<span class="token punctuation">.</span><span class="token function">train</span><span
+                        class="token punctuation">(</span>text<span class="token operator">=</span>text<span
+                        class="token punctuation">,</span> speech_tag_filter<span
+                        class="token operator">=</span>True<span class="token punctuation">,</span> lower<span
+                        class="token operator">=</span>True<span class="token punctuation">,</span> source <span
+                        class="token operator">=</span> <span class="token string">'all_filters'</span><span
+                        class="token punctuation">)</span>
+
+print <span class="token string">'摘要：'</span>
+print <span class="token string">'\n'</span><span class="token punctuation">.</span><span
+                        class="token function">join</span><span class="token punctuation">(</span>tr4s<span
+                        class="token punctuation">.</span><span class="token function">get_key_sentences</span><span
+                        class="token punctuation">(</span>num<span class="token operator">=</span><span
+                        class="token number">3</span><span class="token punctuation">)</span><span
+                        class="token punctuation">)</span> # 重要性最高的三个句子</pre>
+            <p>运行结果如下：
+            </p>
+
+            <pre class="prism-token token  language-javascript">关键词：
+媒体<span class="token operator">/</span>高圆圆<span class="token operator">/</span>微<span
+                        class="token operator">/</span>宾客<span class="token operator">/</span>赵又廷<span
+                        class="token operator">/</span>答谢<span class="token operator">/</span>谢娜<span
+                        class="token operator">/</span>现身<span class="token operator">/</span>记者<span
+                        class="token operator">/</span>新人<span class="token operator">/</span>北京<span
+                        class="token operator">/</span>博<span class="token operator">/</span>展示<span
+                        class="token operator">/</span>捧场<span class="token operator">/</span>礼物<span
+                        class="token operator">/</span>张杰<span class="token operator">/</span>当晚<span
+                        class="token operator">/</span>戴<span class="token operator">/</span>酒店<span
+                        class="token operator">/</span>外套
+关键短语：
+微博
+摘要：
+<span class="token function">中新网北京12月1日电</span><span class="token punctuation">(</span>记者 张曦<span
+                        class="token punctuation">)</span> <span class="token number">30</span><span
+                        class="token function">日晚，高圆圆和赵又廷在京举行答谢宴，诸多明星现身捧场，其中包括张杰</span><span
+                        class="token punctuation">(</span>微博<span class="token punctuation">)</span><span
+                        class="token function">、谢娜</span><span class="token punctuation">(</span>微博<span
+                        class="token punctuation">)</span><span class="token function">夫妇、何炅</span><span
+                        class="token punctuation">(</span>微博<span class="token punctuation">)</span><span
+                        class="token function">、蔡康永</span><span class="token punctuation">(</span>微博<span
+                        class="token punctuation">)</span><span class="token function">、徐克、张凯丽、黄轩</span><span
+                        class="token punctuation">(</span>微博<span class="token punctuation">)</span>等
+高圆圆身穿粉色外套，看到大批记者在场露出娇羞神色，赵又廷则戴着鸭舌帽，十分淡定，两人快步走进电梯，未接受媒体采访
+记者了解到，出席高圆圆、赵又廷答谢宴的宾客近百人，其中不少都是女方的高中同学</pre>
+            <p>另外， <a href="" target="_blank">jieba</a>分词提供的基于TextRank的关键词提取工具。 <a href="" target="_blank">snownlp</a>也实现了关键词提取和摘要生成。
+            </p></div>
+
+    </section>
+
+    <section class="col-article" style="
+    box-sizing: border-box;
+    margin: auto;
+    padding: 0 10px 0;
+    max-width: 1000px;">
+        <h1 class="col-article-title art-title">当深度学习遇见自动文本摘要</h1>
+        <div class="c-markdown">
+            <blockquote><p>作者：姚均霖</p>
+                <p></p>
+                <p>导语
+                    ：随着近几年文本信息的爆发式增长，人们每天能接触到海量的文本信息，如新闻、博客、聊天、报告、论文、微博等。从大量文本信息中提取重要的内容，已成为我们的一个迫切需求，而自动文本摘要（automatic
+                    text summarization）则提供了一个高效的解决方案。</p></blockquote>
+            <h2>介绍</h2>
+            <p>随着近几年文本信息的爆发式增长，人们每天能接触到海量的文本信息，如新闻、博客、聊天、报告、论文、微博等。从大量文本信息中提取重要的内容，已成为我们的一个迫切需求，而自动文本摘要（automatic text
+                summarization）则提供了一个高效的解决方案。</p>
+            <p>根据Radev的定义[3]，摘要是“一段从一份或多份文本中提取出来的文字，它包含了原文本中的重要信息，其长度不超过或远少于原文本的一半”。自动文本摘要旨在通过机器<strong>自动输出</strong>简洁、流畅、保留关键信息的摘要。
+            </p>
+            <p>自动文本摘要有非常多的应用场景，如自动报告生成、新闻标题生成、搜索结果预览等。此外，自动文本摘要也可以为下游任务提供支持。</p>
+            <p>尽管对自动文本摘要有庞大的需求，这个领域的发展却比较缓慢。对计算机而言，生成摘要是一件很有挑战性的任务。从一份或多份文本生成一份合格摘要，要求计算机在阅读原文本后<strong>理解</strong>其内容，并根据轻重缓急对内容进行取舍，裁剪和拼接内容，最后生成流畅的短文本。因此，自动文本摘要需要依靠自然语言处理/理解的相关理论，是近几年来的重要研究方向之一。
+            </p>
+            <p>自动文本摘要通常可分为两类，分别是抽取式（extractive）和生成式（abstractive）。抽取式摘要判断原文本中重要的句子，<strong>抽取</strong>这些句子成为一篇摘要。而生成式方法则应用先进的自然语言处理的算法，通过转述、同义替换、句子缩写等技术，<strong>生成</strong>更凝练简洁的摘要。比起抽取式，生成式更接近人进行摘要的过程。历史上，抽取式的效果通常优于生成式。伴随深度神经网络的兴起和研究，基于神经网络的生成式文本摘要得到快速发展，并取得了不错的成绩。
+            </p>
+            <p>本文主要介绍基于深度神经网络的生成式自动文本摘要，着重讨论典型的摘要模型，并介绍如何评价自动生成的摘要。对抽取式和不基于深度神经网络的生成式自动文本摘要感兴趣的同学可以参考[1][2]。</p>
+            <h2>生成式文本摘要</h2>
+            <p>生成式文本摘要以一种更接近于人的方式生成摘要，这就要求生成式模型有更强的<strong>表征、理解、生成</strong>文本的能力。传统方法很难实现这些能力，而近几年来快速发展的深度神经网络因其强大的表征（representation）能力，提供了更多的可能性，在图像分类、机器翻译等领域不断推进机器智能的极限。借助深度神经网络，生成式自动文本摘要也有了令人瞩目的发展，不少生成式神经网络模型（neural-network-based
+                abstractive summarization model）在DUC-2004测试集上已经超越了最好的抽取式模型[4]。这部分文章主要介绍生成式神经网络模型的基本结构及最新成果。</p>
+            <p><strong>基本模型结构</strong></p>
+            <p>生成式神经网络模型的基本结构主要由编码器（encoder）和解码器（decoder）组成，编码和解码都由神经网络实现。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/1.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>
+                编码器负责将输入的原文本编码成一个向量（context），该向量是原文本的一个表征，包含了文本背景。而解码器负责从这个向量提取重要信息、加工剪辑，生成文本摘要。这套架构被称作Sequence-to-Sequence（以下简称Seq2Seq），被广泛应用于存在输入序列和输出序列的场景，比如机器翻译（一种语言序列到另一种语言序列）、image
+                captioning（图片像素序列到语言序列）、对话机器人（如问题到回答）等。</p>
+            <p>Seq2Seq架构中的编码器和解码器通常由递归神经网络（RNN）或卷积神经网络（CNN）实现。</p>
+            <p><strong>基于递归神经网络的模型</strong></p>
+            <p>RNN被称为递归神经网络，是因为它的输出不仅依赖于输入，还依赖上一时刻输出。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/2.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>
+                如上图所示，t时刻的输出h不仅依赖t时刻的输入x，还依赖t-1时刻的输出，而t-1的输出又依赖t-1的输入和t-2输出，如此递归，时序上的依赖使RNN在理论上能在某时刻输出时，考虑到所有过去时刻的输入信息，特别适合时序数据，如文本、语音、金融数据等。因此，基于RNN实现Seq2Seq架构处理文本任务是一个自然的想法。</p>
+            <p>典型的基于RNN的Seq2Seq架构如下图所示：</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/3.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>图中展示的是一个用于自动回复邮件的模型，它的编码器和解码器分别由四层RNN的变种LSTM[5]组成。图中的向量thought vector编码了输入文本信息（Are you free
+                tomorrow?），解码器获得这个向量依次解码生成目标文本（Yes, what's up?）。上述模型也可以自然地用于自动文本摘要任务，这时的输入为原文本（如新闻），输出为摘要（如新闻标题）。</p>
+            <p>目前最好的基于RNN的Seq2Seq生成式文本摘要模型之一来自Salesforce，在基本的模型架构上，使用了注意力机制（attention mechanism）和强化学习（reinforcement
+                learning）。这个模型将在下文中详细介绍。</p>
+            <p><strong>基于卷积神经网络的模型</strong>
+                Seq2Seq同样也可以通过CNN实现。不同于递归神经网络可以直观地应用到时序数据，CNN最初只被用于图像任务[6]。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/4.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>CNN通过卷积核（上图的A和B）从图像中提取特征（features），间隔地对特征作用max pooling，得到不同阶层的、由简单到复杂的特征，如线、面、复杂图形模式等，如下图所示。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/5.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>
+                CNN的优势是能提取出hierarchical的特征，并且能并行高效地进行卷积操作，那么是否能将CNN应用到文本任务中呢？原生的字符串文本并不能提供这种可能性，然而，一旦将文本表现成分布式向量（distributed
+                representation/word embedding）[7]，我们就可以用一个实数矩阵/向量表示一句话/一个词。这样的分布式向量使我们能够在文本任务中应用CNN。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/6.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>如上图所示，原文本（wait for the video and do n't rent
+                it）由一个实数矩阵表示，这个矩阵可以类比成一张图像的像素矩阵，CNN可以像“阅读”图像一样“阅读”文本，学习并提取特征。虽然CNN提取的文本特征并不像图像特征有显然的可解释性并能够被可视化，CNN抽取的文本特征可以类比自然语言处理中的分析树（syntactic
+                parsing tree），代表一句话的语法层级结构。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/7.gif') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>基于卷积神经网络的自动文本摘要模型中最具代表性的是由Facebook提出的ConvS2S模型[9]，它的编码器和解码器都由CNN实现，同时也加入了注意力机制，下文将详细介绍。</p>
+            <p>当然，我们不仅可以用同一种神经网络实现编码器和解码器，也可以用不同的网络，如编码器基于CNN，解码器基于RNN。</p>
+            <h2>前沿</h2>
+            <p><strong>A Deep Reinforced Model for Abstractive Summarization</strong></p>
+            <p>这是由Salesforce研究发表的基于RNN的生成式自动文本摘要模型，通过架构创新和若干tricks提升模型概括长文本的能力，在CNN/Daily Mail、New York
+                Times数据集上达到了新的state-of-the-art（最佳性能）。</p>
+            <p>
+                针对长文本生成摘要在文本摘要领域是一项比较困难的任务，即使是过去最好的深度神经网络模型，在处理这项任务时，也会出现生成不通顺、重复词句等问题。为了解决上述问题，模型作者提出了<strong>内注意力机制</strong>（intra-attention
+                mechanism）和<strong>新的训练方法</strong>，有效地提升了文本摘要的生成质量。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/8.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>
+                模型里应用了两套注意力机制，分别是1）经典的解码器-编码器注意力机制，和2）解码器内部的注意力机制。前者使解码器在生成结果时，能动态地、按需求地获得输入端的信息，后者则使模型能关注到已生成的词，帮助解决生成长句子时容易重复同一词句的问题。</p>
+            <p>模型的另一创新，是提出了混合式学习目标，融合了监督式学习（teacher forcing）和强化学习（reinforcement learning）。</p>
+            <p>首先，该学习目标包含了传统的最大似然。最大似然（MLE）在语言建模等任务中是一个经典的训练目标，旨在最大化句子中单词的联合概率分布，从而使模型学习到语言的概率分布。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/9.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>
+                但对于文本摘要，仅仅考虑最大似然并不够。主要有两个原因，一是监督式训练有参考“答案”，但投入应用、生成摘要时却没有。比如t时刻生成的词是"tech"，而参考摘要中是"science"，那么在监督式训练中生成t+1时刻的词时，输入是"science"，因此错误并没有积累。但在实际应用中，由于没有ground
+                truth，t+1时刻的输入是错误的"tech"。这样引起的后果是因为没有纠正，错误会积累，这个问题被称为exposure
+                bias。另一个原因是，往往在监督式训练中，对一篇文本一般只提供一个参考摘要，基于MLE的监督式训练只鼓励模型生成一模一样的摘要，然而正如在介绍中提到的，对于一篇文本，往往可以有不同的摘要，因此监督式学习的要求太过绝对。与此相反，用于评价生成摘要的ROUGE指标却能考虑到这一灵活性，通过比较参考摘要和生成的摘要，给出摘要的评价（见下文评估摘要部分）。所以希望在训练时引入ROUGE指标。但由于ROUGE并不可导的，传统的求梯度+backpropagation并不能直接应用到ROUGE。因此，一个很自然的想法是，利用强化学习将ROUGE指标加入训练目标。</p>
+            <p>
+                那么我们是怎么通过强化学习使模型针对ROUGE进行优化呢？简单说来，模型先以前向模式（inference）生成摘要样本，用ROUGE指标测评打分，得到了对这个样本的评价/回报（reward）后，再根据回报更新模型参数：如果模型生成的样本reward较高，那么鼓励模型；如果生成的样本评价较低，那么抑制模型输出此类样本。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/10.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>最终的训练目标是最大似然和基于ROUGE指标的函数的加权平均，这两个子目标各司其职：最大似然承担了建立好的语言模型的责任，使模型生成语法正确、文字流畅的文本；而ROUGE指标则降低exposure
+                bias，允许摘要拥有更多的灵活性，同时针对ROUGE的优化也直接提升了模型的ROUGE评分。</p>
+            <p>构建一个好的模型，除了在架构上需要有创新，也需要一些小技巧，这个模型也不例外。在论文中，作者使用了下列技巧：</p>
+            <ol class="ol-level-0">
+                <li>使用指针处理未知词（OOV）问题；</li>
+                <li>共享解码器权重，加快训练时模型的收敛；</li>
+                <li>人工规则，规定不能重复出现连续的三个词。</li>
+            </ol>
+            <p>综上所述，深度学习+强化学习是一个很好的思路，这个模型第一次将强化学习应用到文本摘要任务中，取得了不错的表现。相信同样的思路还可以用在其他任务中。</p>
+            <p><strong>Convolutional Sequence to Sequence Learning</strong></p>
+            <p>
+                ConvS2S模型由Facebook的AI实验室提出，它的编码器和解码器都是基于卷积神经网络搭建的。这个模型主要用于机器翻译任务，在论文发表的时候，在英-德、英-法两个翻译任务上都达到了state-of-the-art。同时，作者也尝试将该模型用于自动文本摘要，实验结果显示，基于CNN的Seq2Seq模型也能在文本摘要任务中达到接近state-of-the-art的表现。</p>
+            <p>模型架构如下图所示。乍看之下，模型很复杂，但实际上，它的每个部分都比较直观，下面通过分解成子模块，详细介绍ConvS2S。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/11.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>首先来看embedding部分。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/12.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>这个模型的embedding比较新颖，除了传统的semantic embedding/word embedding，还加入了position
+                embedding，将词序表示成分布式向量，使模型获得词序和位置信息，模拟RNN对词序的感知。最后的embedding是语义和词序embedding的简单求和。</p>
+            <p>之后，词语的embedding作为输入进入到模型的卷积模块。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/13.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>这个卷积模块可以视作是经典的卷积加上非线性变换。虽然图中只画出一层的情况，实际上可以像经典的卷积层一样，层层叠加。</p>
+            <p>这里着重介绍非线性变换。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/14.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>该非线性变换被称为Gated Linear Unit
+                (GLU)[10]。它将卷积后的结果分成两部分，对其中一部分作用sigmoid变换，即映射到0到1的区间之后，和另一部分向量进行element-wise乘积。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/15.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>这个设计让人联想到LSTM中的门结构。GLU从某种程度上说，是在模仿LSTM和GRU中的门结构，使网络有能力控制信息流的传递，GLU在language modeling被证明是非常有效的[10]。</p>
+            <p>除了将门架构和卷积层结合，作者还使用了残差连接（residual connection）[11]。residual connection能帮助构建更深的网络，缓解梯度消失/爆炸等问题。</p>
+            <p>除了使用加强版的卷积网络，模型还引入了带多跳结构的注意力机制（multi-step
+                attention）。不同于以往的注意力机制，多跳式注意力不仅要求解码器的最后一层卷积块关注输入和输出信息，而且还要求每一层卷积块都执行同样的注意力机制。如此复杂的注意力机制使模型能获得更多的历史信息，如哪些输入已经被关注过。</p>
+            <figure>
+                <div class="image-block"><span><img
+                        src="{{ url_for('static', filename='algroithm/16.png') }}" class=""
+                        style="cursor: zoom-in;"></span></div>
+            </figure>
+            <p>像A Deep Reinforced Model for Abstractive
+                Summarization一样，ConvS2S的成功之处不仅在于创新的结构，还在于细致入微的小技巧。在ConvS2S中，作者对参数使用了非常仔细的初始化和规范化（normalization），稳定了方差和训练过程。</p>
+            <p>这个模型的成功证明了CNN同样能应用到文本任务中，通过层级表征长程依赖（long-range
+                dependency）。同时，由于CNN具有可高度并行化的特点，所以CNN的训练比RNN更高效。比起RNN，CNN的不足是有更多的参数需要调节。</p>
+            <h2>评估摘要</h2>
+            <p>评估一篇摘要的质量是一件比较困难的任务。</p>
+            <p>
+                对于一篇摘要而言，很难说有标准答案。不同于很多拥有客观评判标准的任务，摘要的评判一定程度上依赖主观判断。即使在摘要任务中，有关于语法正确性、语言流畅性、关键信息完整度等标准，摘要的评价还是如同”一千个人眼里有一千个哈姆雷特“一样，每个人对摘要的优劣都有自己的准绳。</p>
+            <p>自上世纪九十年代末开始，一些会议或组织开始致力于制定摘要评价的标准，他们也会参与评价一些自动文本摘要。比较著名的会议或组织包括SUMMAC，DUC（Document Understanding
+                Conference），TAC（Text Analysis Conference）等。其中DUC的摘要任务被广泛研究，大多数abstractive摘要模型在DUC-2004数据集上进行测试。</p>
+            <p>目前，评估自动文本摘要质量主要有两种方法：人工评价方法和自动评价方法。这两类评价方法都需要完成以下三点：</p>
+            <ol class="ol-level-0">
+                <li>决定原始文本最重要的、需要保留的部分；</li>
+                <li>在自动文本摘要中识别出1中的部分；</li>
+                <li>基于语法和连贯性（coherence）评价摘要的可读性（readability）。</li>
+            </ol>
+            <p><strong>人工评价方法</strong></p>
+            <p>
+                评估一篇摘要的好坏，最简单的方法就是邀请若干专家根据标准进行人工评定。这种方法比较接近人的阅读感受，但是耗时耗力，无法用于对大规模自动文本摘要数据的评价，和自动文本摘要的应用场景并不符合。因此，文本摘要研究团队积极地研究自动评价方法。</p>
+            <p><strong>自动评价方法</strong></p>
+            <p>
+                为了更高效地评估自动文本摘要，可以选定一个或若干指标（metrics），基于这些指标比较生成的摘要和参考摘要（人工撰写，被认为是正确的摘要）进行自动评价。目前最常用、也最受到认可的指标是ROUGE（Recall-Oriented
+                Understudy for Gisting Evaluation）。ROUGE是Lin提出的一个指标集合，包括一些衍生的指标，最常用的有ROUGE-n，ROUGE-L，ROUGE-SU：</p>
+            <ul class="ul-level-0" style="margin:10px 0 10px 20px">
+                <li>ROUGE-n：该指标旨在通过比较生成的摘要和参考摘要的n-grams（连续的n个词）评价摘要的质量。常用的有ROUGE-1，ROUGE-2，ROUGE-3。</li>
+                <li>
+                    ROUGE-L：不同于ROUGE-n，该指标基于最长公共子序列（LCS）评价摘要。如果生成的摘要和参考摘要的LCS越长，那么认为生成的摘要质量越高。该指标的不足之处在于，它要求n-grams一定是连续的。
+                </li>
+                <li>ROUGE-SU：该指标综合考虑uni-grams（n = 1）和bi-grams（n = 2），允许bi-grams的第一个字和第二个字之间插入其他词，因此比ROUGE-L更灵活。
+                    作为自动评价指标，ROUGE和人工评定的相关度较高，在自动评价摘要中能给出有效的参考。但另一方面，从以上对ROUGE指标的描述可以看出，ROUGE基于字的对应而非语义的对应，生成的摘要在字词上与参考摘要越接近，那么它的ROUGE值将越高。但是，如果字词有区别，即使语义上类似，得到的ROUGE值就会变低。换句话说，如果一篇生成的摘要恰好是在参考摘要的基础上进行同义词替换，改写成字词完全不同的摘要，虽然这仍是一篇质量较高的摘要，但ROUGE值会呈现相反的结论。从这个极端但可能发生的例子可以看出，自动评价方法所需的指标仍然存在一些不足。目前，为了避免上述情况的发生，在evaluation时，通常会使用几篇摘要作为参考和基准，这有效地增加了ROUGE的可信度，也考虑到了摘要的不唯一性。对自动评价摘要方法的研究和探索也是目前自动文本摘要领域一个热门的研究方向。
+                </li>
+            </ul>
+            <h2>总结</h2>
+            <p>
+                本文主要介绍了基于深度神经网络的生成式文本摘要，包括基本模型和最新进展，同时也介绍了如何评价自动生成的摘要。自动文本摘要是目前NLP的热门研究方向之一，从研究落地到实际业务，还有一段路要走，未来可能的发展方向有：1）模仿人撰写摘要的模式，融合抽取式和生成式模型；2）研究更好的摘要评估指标。希望本文能帮助大家更好地了解深度神经网络在自动文本摘要任务中的应用。</p>
+            <h2>Reference</h2>
+            <p>[1] <a href="https://arxiv.org/abs/1707.02268" target="_blank">Text Summarization Techniques: A Brief
+                Survey</a></p>
+            <p>[2] <a href="http://www.cs.cmu.edu/~nasmith/LS2/das-martins.07.pdf" target="_blank">A Survey on Automatic
+                Text Summarization</a></p>
+            <p>[3] <a href="http://www.mitpressjournals.org/doi/abs/10.1162/089120102762671927" target="_blank">Introduction
+                to the Special Issue on Summarization</a></p>
+            <p>[4] <a href="https://arxiv.org/abs/1705.04304" target="_blank">A Deep Reinforced Model for Abstractive
+                Summarization</a></p>
+            <p>[5] <a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank">Understanding
+                LSTM Networks</a></p>
+            <p>[6]<a href="http://yann.lecun.com/exdb/lenet/" target="_blank"> LeNet5, convolutional neural networks</a>
+            </p>
+            <p>[7]<a href="https://www.quora.com/What-is-word-embedding-in-deep-learning" target="_blank"> What is word
+                embedding in deep learning</a></p>
+            <p>[8]<a
+                    href="https://www.salesforce.com/products/einstein/ai-research/tl-dr-reinforced-model-abstractive-summarization/"
+                    target="_blank"> A Deep Reinforced Model for Abstractive Summarization</a></p>
+            <p>[9] <a href="https://arxiv.org/abs/1705.03122" target="_blank">Convolutional Sequence to Sequence
+                Learning</a></p>
+            <p>[10] <a href="https://arxiv.org/abs/1612.08083" target="_blank">Language Modeling with Gated
+                Convolutional Networks</a></p>
+            <p>[11] <a href="https://arxiv.org/abs/1512.03385" target="_blank">Deep Residual Learning for Image
+                Recognition</a></p></div>
+
+    </section>
+
+    <script>
+        $(".art-title").click(function () {
+
+            //获得标签级别
+            var tagName = $(this).get(0).tagName;
+            tagName = tagName.toLowerCase();
+            var level = tagName.substr(1, 1);
+            //遍历子元素
+            var brothers = $(this).nextUntil(tagName);
+            brothers.each(function (index, element) {
+                var brotagName = $(this).get(0).tagName;
+                if (brotagName.substr(0, 1) == "H") {//alert(brotagName);
+                    var brolevel = brotagName.substr(1, 1);
+                    if (brolevel >= level) {
+                        $(this).toggle(300);
+                    }
+                    else {
+                        return false;
+                    }//结束循环
+                } else {
+                    $(this).toggle(300);
+                }
+            });
+            if ($(this).children("i").length > 0) {
+                $(this).children("i").remove();
+            } else {
+                $(this).prepend("<i class='fa fa-angle-double-down' style='font-style:normal'>  </i>");
+            }
+        });
+        $('.art-title').click()
+    </script>
+{% endblock %}

@@ -75,7 +75,7 @@ class User(UserMixin, SurrogatePK, Model):
         """Check password."""
         return bcrypt.check_password_hash(self.password, value)
 
-    def generate_auth_token(self, expiration=3600):
+    def generate_auth_token(self, expiration=360000):
         s = Serializer(current_app.config["SECRET_KEY"], expires_in=expiration)
         return s.dumps({'id': self.id})
 

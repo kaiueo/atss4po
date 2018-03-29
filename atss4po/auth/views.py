@@ -26,7 +26,7 @@ def load_user(user_id):
 def logout():
     """Logout."""
     logout_user()
-    flash('You are logged out.', 'info')
+    flash('您已经登出', 'info')
     return redirect(url_for('public.home'))
 
 
@@ -72,5 +72,5 @@ def login():
 @blueprint.route('/detail/')
 @login_required
 def detail():
-    return render_template('users/user.html')
+    return render_template('users/user.html', user=current_user)
 

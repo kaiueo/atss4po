@@ -27,6 +27,9 @@ def home():
     return render_template('public/home.html', form=form)
 
 
+@blueprint.route('/algroithm/')
+def algroithm():
+    return render_template('public/algroithm.html')
 
 @blueprint.route('/about/')
 def about():
